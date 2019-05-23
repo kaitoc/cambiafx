@@ -41,18 +41,15 @@ def parseCuantodolar():
     scd = BeautifulSoup(cuantodolar.text, 'html.parser')
     containers = scd.findAll("div", {"class": "cont_cambio"})
 
-    table = containers[0].findAll('table')
-    # print(tables)
-
+    tables = containers[0].findAll('table')
     tables_json = []
-
+    print(len(tables))
     for t0, table in enumerate(tables):
         for r0, tr in enumerate(table.findAll('tr')):
-            for c0, td in enumerate(table.findAll('td')):
-                print(r0, c0)
+            for c0, td in enumerate(tr.findAll('td')):
                 if r0 == 0:
-                    # print("FIRST ROW r0\t", td)
                     if c0 == 0:
+                        print("FIRST ROW r0\t", t0, r0, c0, td)
                         tables_json.append({
                             "title": td.get_text(),
                             "entidad": [],
@@ -61,20 +58,21 @@ def parseCuantodolar():
                         })
 
                 elif c0 == 0:
-                    # print(td)
                     tables_json[t0]["entidad"].append(
                         td.find("img").get('alt', ''))
                 elif c0 == 1:
                     tables_json[t0]["compra"].append(td.get_text())
-
+                elif c0 == 2:
+                    tables_json[t0]["venta"].append(td.get_text())
+    print(tables_json)
     return containers
 
 
 def main():
+    INFO_CUANTODOLAR = parseCuantodolar()
+    return
     INFO_BLOOMBERG = parseBloomberg()
     INFO_INVESTING = parseInvesting()
-    INFO_CUANTODOLAR = parseCuantodolar()
-
 
 if __name__ == '__main__':
     main()
