@@ -1,5 +1,6 @@
 import requests, json
 from bs4 import BeautifulSoup
+from collections import defaultdict
 
 URL_INVERSTING = "https://es.investing.com/currencies/usd-pen"
 URL_CUANTODOLAR = "https://cuantoestaeldolar.pe"
@@ -39,9 +40,29 @@ def parseCuantodolar():
 
     scd = BeautifulSoup(cuantodolar.text, 'html.parser')
     containers = scd.findAll("div", {"class": "cont_cambio"})
-    for container in containers:
-        [c.extract() for c in container.findAll('script')]
-        print(container.prettify())
+    
+    tables = containers[0].findAll('table')
+    print(tables)
+    
+    tables_json = []
+
+    for t0, table in enumerate(tables):
+        for r0, tr in enumerate(table.findAll('tr')):
+            for c0, td in enumerate(table.findAll('td')):
+                if r0 == 0:
+                    if c0 == 0: 
+                        tables_json.append({"title": td.get_text(),
+                                            "entidad" : [],
+                                            "compra" : [],
+                                            "venta" : []})
+
+                elif c1 == 0:
+                    tables_json[t0]["entidad"].append(td.find("img").get('alt', ''))
+                elif c1 == 1:
+                    tables_json[t0]["compra"].append(td.get_text())
+            
+                        
+            
 
     return containers
 
