@@ -40,29 +40,32 @@ def parseCuantodolar():
 
     scd = BeautifulSoup(cuantodolar.text, 'html.parser')
     containers = scd.findAll("div", {"class": "cont_cambio"})
-    
-    tables = containers[0].findAll('table')
-    print(tables)
-    
+
+    table = containers[0].findAll('table')
+    # print(tables)
+
     tables_json = []
 
     for t0, table in enumerate(tables):
         for r0, tr in enumerate(table.findAll('tr')):
             for c0, td in enumerate(table.findAll('td')):
+                print(r0, c0)
                 if r0 == 0:
-                    if c0 == 0: 
-                        tables_json.append({"title": td.get_text(),
-                                            "entidad" : [],
-                                            "compra" : [],
-                                            "venta" : []})
+                    # print("FIRST ROW r0\t", td)
+                    if c0 == 0:
+                        tables_json.append({
+                            "title": td.get_text(),
+                            "entidad": [],
+                            "compra": [],
+                            "venta": []
+                        })
 
-                elif c1 == 0:
-                    tables_json[t0]["entidad"].append(td.find("img").get('alt', ''))
-                elif c1 == 1:
+                elif c0 == 0:
+                    # print(td)
+                    tables_json[t0]["entidad"].append(
+                        td.find("img").get('alt', ''))
+                elif c0 == 1:
                     tables_json[t0]["compra"].append(td.get_text())
-            
-                        
-            
 
     return containers
 
