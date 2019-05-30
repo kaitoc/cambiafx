@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+<style>
+.wrapper {
+    margin-right: 15px;
+    margin-left: 15px;
+    width: 1605px;
+}
+
+div {
+    display: block;
+}
+body {
+    margin: 0;
+    font-family: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: left;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: separate;
+    border-spacing: 2px;
+}
+
+html {
+    font-family: sans-serif;
+    line-height: 1.15;
+}
+
+</style>
+</head>
+
+<body>
+<div class="wrapper">
+    <h2>Cambio FX</h2>
+    <table id="container">
+        <thead>
+            <tr>
+                <th>Entidad</th>
+                <th>Valor Actual</th>
+                <th>Compra</th>
+                <th>Venta</th>
+                <th>Rango</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<script>
+
+var template = 
+'<tbody><tr>' +
+    '<td>{entidad}</td>' +
+    '<td>{real-time}</td>' +
+    '<td>{compra}</td>' +
+    '<td>{venta}</td>' +
+    '<td>{rango}</td>' +
+'</tr></tbody>';
+
+$.getJSON("/bloomberg" , function(data) {
+        $.each(data, function()
+        {
+		document.getElementById("container").innerHTML += template.replace("{entidad}", data[0]["title"]).replace("{real-time}", data[0]["real_time"] ).replace("{compra}", "-").replace("{venta}", "-").replace("{rango}", data[0]["rango"]);
+        });
+});
+
+$.getJSON("/investing" , function(data) {
+        $.each(data, function()
+        {
+		document.getElementById("container").innerHTML += template.replace("{entidad}", data[0]["title"]).replace("{real-time}", data[0]["real_time"] ).replace("{compra}", data[0]["compra"]).replace("{venta}", data[0]["venta"]).replace("{rango}", data[0]["rango"]);
+        });
+});
+$.getJSON("/cuantodolar" , function(data) {
+	var i = 0;
+        $.each(data, function()
+        {
+		for (var j = 0; j < data[i]["entidad"].length; ++j){
+		document.getElementById("container").innerHTML += template.replace("{entidad}",  data[i]["title"] + " - "  + data[i]["entidad"][j]).replace("{real-time}", "-" ).replace("{compra}", data[i]["compra"][j]).replace("{venta}", data[i]["venta"][j]).replace("{rango}", "-");
+		}
+		i++;
+        });
+});
+</script>
+</body>
+</html>
